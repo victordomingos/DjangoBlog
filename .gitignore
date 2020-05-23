@@ -3,6 +3,12 @@ __pycache__/
 *.py[cod]
 *$py.class
 *.sqlite3
+*.idea
+*.vscode
+*.DS_Store
+Pipfile
+djangoblog-project/images/
+
 
 # C extensions
 *.so

@@ -32,11 +32,10 @@ class Artigo(models.Model):
         "Imagem de destaque",
         upload_to='images/artigos',
         null=True, blank=True)
-    visitas = models.ForeignKey('Visita', on_delete=models.SET_NULL,
-                                editable=False,
-                                null=True, blank=True)
-    gostos = models.BigIntegerField(default=0, editable=False)
-    data_criacao = models.DateTimeField(default=timezone.now, editable=False)
+    visitas = models.ForeignKey(
+        'Visita', on_delete=models.SET_NULL, null=True, blank=True)
+    gostos = models.BigIntegerField(default=0)
+    data_criacao = models.DateTimeField(default=timezone.now)
     data_publicacao = models.DateTimeField(null=True, blank=True)
 
     def publicar(self):
@@ -92,12 +91,12 @@ class Comentario(models.Model):
                                on_delete=models.CASCADE,
                                related_name='students',
                                related_query_name='person')
-    data = models.DateTimeField(default=timezone.now, editable=False)
+    data = models.DateTimeField(default=timezone.now)
     estado = models.IntegerField(
         choices=EstadoComentario.choices,
         default=EstadoComentario.NOT_SAVED)
-    thumbs_up = models.IntegerField(default=0, editable=False)
-    thumbs_down = models.IntegerField(default=0, editable=False)
+    thumbs_up = models.IntegerField(default=0)
+    thumbs_down = models.IntegerField(default=0)
 
     def publicar(self):
         self.data_publicacao = timezone.now()
@@ -111,7 +110,7 @@ class Utilizador(models.Model):
     nome = models.CharField(max_length=100)
     email = models.EmailField(null=False, blank=False, default="")
     foto = models.ImageField(verbose_name="Fotografia",
-                             upload_to='images/utilizadores',
+                             upload_to='images/utilizadores', 
                              null=True, blank=True)
 
 
