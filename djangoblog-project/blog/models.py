@@ -25,7 +25,7 @@ class Artigo(models.Model):
                               null=True,
                               blank=True)
     artigos_relacionados = models.ManyToManyField(
-        'self', symmetrical=True, null=True, blank=True)
+        'self', symmetrical=True, blank=True)
     estado = models.IntegerField(choices=EstadoArtigo.choices,
                                  default=EstadoArtigo.NOT_SAVED)
     img_destaque = models.ImageField(
