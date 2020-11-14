@@ -1,0 +1,15 @@
+
+
+{% load hitcount_tags %}
+
+<h2>{{ artigo.titulo }}</h2>
+<p>Visualizações: {% get_hit_count for artigo %}</p>
+
+
+<h3>Artigos populares</h3>
+{% for p in popular_posts %}
+    <p>{{ p.titulo }}</p>
+{% endfor %}
+
+</body>
+</html>

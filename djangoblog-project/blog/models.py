@@ -1,6 +1,8 @@
 # from django.conf import settings
+from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.utils import timezone
+from hitcount.models import HitCount
 
 
 class Artigo(models.Model):
@@ -11,29 +13,41 @@ class Artigo(models.Model):
         AGENDADO = 3, "Agendado"
         PUBLICADO = 4, "Publicado"
 
-    autores = models.ManyToManyField('Utilizador')
+    autores = models.ManyToManyField('Autor')
     titulo = models.CharField('Título', max_length=256)
     resumo = models.CharField(max_length=512)
     conteudo = models.TextField('Conteúdo')
-    slug = models.SlugField(max_length=64, null=True, blank=True)
+    slug = models.SlugField(max_length=64, default='', blank=True)
     categorias = models.ManyToManyField('Categoria')
-    tags = models.ManyToManyField('Tag',
-                                  related_name="Tópicos",
-                                  related_query_name="Tópico")
-    serie = models.ForeignKey('Serie',
-                              on_delete=models.CASCADE,
-                              null=True,
-                              blank=True)
+    tags = models.ManyToManyField('Tag', related_name="Tópicos")
+    serie = models.ForeignKey(
+        'Serie',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True
+    )
     artigos_relacionados = models.ManyToManyField(
-        'self', symmetrical=True, blank=True)
-    estado = models.IntegerField(choices=EstadoArtigo.choices,
-                                 default=EstadoArtigo.NOT_SAVED)
+        'self', 
+        related_name="artigos_relacionados", 
+        blank=True
+    )
+    estado = models.IntegerField(
+        choices=EstadoArtigo.choices,
+        default=EstadoArtigo.NOT_SAVED
+    )
     img_destaque = models.ImageField(
         "Imagem de destaque",
         upload_to='images/artigos',
-        null=True, blank=True)
-    visitas = models.ForeignKey(
-        'Visita', on_delete=models.SET_NULL, null=True, blank=True)
+        null=True, 
+        blank=True
+    )
+    # visitas = models.ForeignKey(
+    #     'Visita', on_delete=models.SET_NULL, null=True, blank=True)
+    hit_count_generic = GenericRelation(
+        HitCount,
+        object_id_field='object_pk',
+        related_query_name='hit_count_generic_relation'
+    )
     gostos = models.BigIntegerField(default=0)
     data_criacao = models.DateTimeField(default=timezone.now)
     data_publicacao = models.DateTimeField(null=True, blank=True)
@@ -68,7 +82,11 @@ class Serie(models.Model):
     titulo = models.CharField("Título", max_length=256)
     descricao = models.CharField(max_length=512)
     img_destaque = models.ImageField(
-        "Imagem de destaque", upload_to='images/series', null=True, blank=True)
+        "Imagem de destaque", 
+        upload_to='images/series', 
+        null=True, 
+        blank=True
+    )
 
     def __str__(self):
         return self.titulo
@@ -83,42 +101,49 @@ class Comentario(models.Model):
         SPAM = 4, "Marcado como Spam"
         APROVADO = 5, "Aprovado"
 
-    escrito_por = models.ForeignKey('Utilizador', on_delete=models.CASCADE)
+    escrito_por = models.ForeignKey('Autor', on_delete=models.CASCADE)
     assunto = models.CharField(max_length=256)
-    texto = models.CharField(max_length=1024)
-    conteudo = models.TextField()
-    artigo = models.ForeignKey(Artigo,
-                               on_delete=models.CASCADE,
-                               related_name='students',
-                               related_query_name='person')
+    conteudo = models.TextField('Texto')
+    artigo = models.ForeignKey(
+        Artigo,
+        on_delete=models.CASCADE,
+        related_name='Comentários',
+    )
     data = models.DateTimeField(default=timezone.now)
     estado = models.IntegerField(
         choices=EstadoComentario.choices,
-        default=EstadoComentario.NOT_SAVED)
+        default=EstadoComentario.NOT_SAVED
+    )
     thumbs_up = models.IntegerField(default=0)
     thumbs_down = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.assunto
 
     def publicar(self):
         self.data_publicacao = timezone.now()
         self.save()
 
-    def __str__(self):
-        return self.titulo
 
-
-class Utilizador(models.Model):
+class Autor(models.Model):
     nome = models.CharField(max_length=100)
-    email = models.EmailField(null=False, blank=False, default="")
-    foto = models.ImageField(verbose_name="Fotografia",
-                             upload_to='images/utilizadores', 
-                             null=True, blank=True)
+    email = models.EmailField(default='')
+    foto = models.ImageField(
+        verbose_name="Fotografia",
+        upload_to='images/autores',
+        null=True, 
+        blank=True
+    )
+
+    def __str__(self):
+        return self.nome
 
 
 class Visita(models.Model):
     pass
 
-    def __str__(self):
-        return self.titulo
+    #def __str__(self):
+    #    return self.titulo
 
 
 class Perfil(models.Model):
@@ -141,5 +166,5 @@ class Estatuto(models.Model):
 class ConfigPontuacao(models.Model):
     pass
 
-    def __str__(self):
-        return self.titulo
+    #def __str__(self):
+    #    return self.titulo

@@ -1,11 +1,11 @@
 # noinspection PyPackageRequirements
 from django.contrib import admin
 
-from .models import Artigo, Utilizador, Comentario, Categoria, Tag, Serie
+from .models import Artigo, Autor, Comentario, Categoria, Tag, Serie
 from .models import Estatuto, Perfil, Visita, ConfigPontuacao
 
-@admin.register(Utilizador)
-class UtilizadorAdmin(admin.ModelAdmin):
+@admin.register(Autor)
+class AutorAdmin(admin.ModelAdmin):
     pass
 
 @admin.register(Artigo)

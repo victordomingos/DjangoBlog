@@ -1,0 +1,12 @@
+{% load hitcount_tags %}
+
+<h1>Hello</h1>
+
+<h2>Artigos</h2>
+
+<ul>
+    {% for artigo in artigos %}
+    <h3><a href="{% url 'detalhe' artigo.slug %}">{{ artigo.titulo }}</a></h3>
+    <p>Visitas: {% get_hit_count for artigo %}</p>
+    {% endfor %}
+</ul>

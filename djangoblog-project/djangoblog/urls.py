@@ -18,19 +18,22 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
-import blog.views
+from blog.views import IndexView, ArtigoDetailView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', blog.views.index, name='index'), 
-] 
+    path('', IndexView.as_view(), name='index'),
+    path('<slug:slug>/', ArtigoDetailView.as_view(), name='detalhe'),
+    path('hitcount/', include(('hitcount.urls', 'hitcount'),
+                              namespace='hitcount')),
+]
 
 if settings.DEBUG:
     import debug_toolbar
-    urlpatterns = [
-        path('__debug__/', include(debug_toolbar.urls)),
-    ] + urlpatterns
 
+    urlpatterns = [
+                      path('__debug__/', include(debug_toolbar.urls)),
+                  ] + urlpatterns
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
